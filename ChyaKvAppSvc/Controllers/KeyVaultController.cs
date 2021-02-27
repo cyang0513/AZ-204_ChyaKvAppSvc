@@ -23,39 +23,28 @@ namespace ChyaKvAppSvc.Controllers
       }
 
       [HttpGet]
-      public async Task<string> GetSecretDetailAsync(string secName)
+      public async Task<KeyVaultSecret> GetSecretDetailAsync(string secName)
       {
          var kvSecClient = new SecretClient(new Uri(m_KvUrl), new DefaultAzureCredential());
-
-         var secValue = await kvSecClient.GetSecretAsync(secName);
-
-         return secValue.Value.Value;
+         var getValue = await kvSecClient.GetSecretAsync(secName);
+         return getValue;
       }
 
       [HttpPost]
-      [ValidateAntiForgeryToken]
-      public ActionResult CreateSecret(string secName)
+      public async Task<KeyVaultSecret> CreateSecretAsync(string secName)
       {
-         try
-         {
-            return RedirectToAction(nameof(Index));
-         }
-         catch
-         {
-            return View();
-         }
+         var kvSecClient = new SecretClient(new Uri(m_KvUrl), new DefaultAzureCredential());
+         var setSec = await kvSecClient.SetSecretAsync(new KeyVaultSecret(secName, "New Default Secret"));
+         return setSec;
       }
 
-      [HttpPut]
-      public ActionResult EditSecret(string secName)
-      {
-         return View();
-      }
 
       [HttpDelete]
-      public ActionResult Delete(int id)
+      public DeleteSecretOperation DeleteSecret(string secName)
       {
-         return View();
+         var kvSecClient = new SecretClient(new Uri(m_KvUrl), new DefaultAzureCredential());
+         var delSec =  kvSecClient.StartDeleteSecret(secName);
+         return delSec;
       }
    }
 }
