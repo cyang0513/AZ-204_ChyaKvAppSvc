@@ -13,19 +13,19 @@ namespace ChyaKvAppSvc.Controllers
 {
    [ApiController]
    [Route("[controller]")]
-   public class KeyVaultController : Controller
+   public class SecretController : Controller
    {
-      readonly string m_KvUrl;
+      readonly string m_KvUri;
 
-      public KeyVaultController(IConfiguration configuration)
+      public SecretController(IConfiguration configuration)
       {
-         m_KvUrl = configuration.GetSection("KeyValutUrl").Value;
+         m_KvUri = configuration.GetSection("KeyValutUrl").Value;
       }
 
       [HttpGet]
       public async Task<KeyVaultSecret> GetSecretDetailAsync(string secName)
       {
-         var kvSecClient = new SecretClient(new Uri(m_KvUrl), new DefaultAzureCredential());
+         var kvSecClient = new SecretClient(new Uri(m_KvUri), new DefaultAzureCredential());
          var getValue = await kvSecClient.GetSecretAsync(secName);
          return getValue;
       }
@@ -33,7 +33,7 @@ namespace ChyaKvAppSvc.Controllers
       [HttpPost]
       public async Task<KeyVaultSecret> CreateSecretAsync(string secName)
       {
-         var kvSecClient = new SecretClient(new Uri(m_KvUrl), new DefaultAzureCredential());
+         var kvSecClient = new SecretClient(new Uri(m_KvUri), new DefaultAzureCredential());
          var setSec = await kvSecClient.SetSecretAsync(new KeyVaultSecret(secName, "New Default Secret"));
          return setSec;
       }
@@ -42,7 +42,7 @@ namespace ChyaKvAppSvc.Controllers
       [HttpDelete]
       public DeleteSecretOperation DeleteSecret(string secName)
       {
-         var kvSecClient = new SecretClient(new Uri(m_KvUrl), new DefaultAzureCredential());
+         var kvSecClient = new SecretClient(new Uri(m_KvUri), new DefaultAzureCredential());
          var delSec =  kvSecClient.StartDeleteSecret(secName);
          return delSec;
       }
